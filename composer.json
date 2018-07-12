@@ -1,0 +1,8 @@
+{
+    "require": {
+        "php": ">=5.3"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

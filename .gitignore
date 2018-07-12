@@ -31,3 +31,8 @@ Desktop.ini
 # Vagrant files
 /.vagrant
 /*.log
+
+# Composer files
+/vendor
+/composer.lock
+/composer.phar
