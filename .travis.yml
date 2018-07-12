@@ -12,6 +12,10 @@ php:
 - 7.2
 - nightly
 
+matrix:
+  allow_failures:
+  - php: nightly
+
 branches:
   only:
   - master
@@ -22,7 +26,8 @@ install:
 - composer install --prefer-dist
 
 script:
-- exit 0;
+- php vendor/bin/phpcs
+- php vendor/bin/phpunit
 
 cache:
   directories:
