@@ -11,6 +11,11 @@ interface ValidentityInterface
     public function check($id);
 
     /**
+     * @return string
+     */
+    public function generate();
+
+    /**
      * @param string $id
      * @return string
      */

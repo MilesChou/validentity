@@ -85,4 +85,14 @@ class TaiwanTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertTrue($this->target->check($id));
     }
+
+    /**
+     * @test
+     */
+    public function shouldGenerateValidIdentity()
+    {
+        $fakeId = $this->target->generate();
+
+        $this->assertTrue($this->target->check($fakeId), "Assert identity '$fakeId' is valid");
+    }
 }

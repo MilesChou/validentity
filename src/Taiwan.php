@@ -36,6 +36,15 @@ class Taiwan implements ValidentityInterface
         'Z' => '33',
     ];
 
+    private static $genderChars = [
+        '1',
+        '2',
+        'A',
+        'B',
+        'C',
+        'D',
+    ];
+
     /**
      * @var array
      */
@@ -57,17 +66,32 @@ class Taiwan implements ValidentityInterface
     {
         $id = $this->normalize($id);
 
-        // Local identity pattern
-        if (preg_match('/(^[A-Z][1-2]\d{8})$/', $id)) {
-            return $this->checksumForLocalIdentity($id);
+        // Check identity pattern
+        if (!preg_match('/(^[A-Z][A-D1-2]\d{8})$/', $id)) {
+            return false;
         }
 
-        // Foreign identity pattern
-        if (preg_match('/(^[A-Z][A-D]\d{8})$/', $id)) {
-            return $this->checksumForForeignIdentity($id);
+        return $this->checkIdentity($id);
+    }
+
+    public function generate()
+    {
+        $locationChar = array_rand(self::$charMapping);
+        $genderChar = self::$genderChars[array_rand(self::$genderChars)];
+
+        $fakeId = $locationChar . $genderChar . mt_rand(1000000, 9999999);
+
+        $fakeIdNumber = $this->transferIdentityToNumber($fakeId);
+
+        $sum = $this->calculateSum($fakeIdNumber);
+
+        $sub = $sum % 10;
+
+        if (0 === $sub) {
+            return $fakeId . '0';
         }
 
-        return false;
+        return $fakeId . (string)(10 - $sub);
     }
 
     public function normalize($id)
@@ -84,44 +108,96 @@ class Taiwan implements ValidentityInterface
      * @param string $id
      * @return bool
      */
-    private function checksumForForeignIdentity($id)
+    private function checkIdentity($id)
     {
-        $checkNumber = (int)$id[strlen($id) - 1];
+        $checksum = $this->getChecksum($id);
 
-        $id = self::$charMapping[$id[0]] . self::$charMapping[$id[1]][1] . substr($id, 2, -1);
+        $idNumber = $this->transferIdentityToNumber($id);
 
+        $sum = $this->calculateSum($idNumber);
+
+        return $this->checksum($sum, $checksum);
+    }
+
+    /**
+     * @param string $id
+     * @return int
+     */
+    private function calculateSum($id)
+    {
+        return $this->isLocal($id)
+            ? $this->calculateSumForLocal($id)
+            : $this->calculateSumForForeign($id);
+    }
+
+    /**
+     * @param string $id
+     * @return int
+     */
+    private function calculateSumForLocal($id)
+    {
         $splitId = str_split($id);
 
-        $checksum = array_sum(array_map(function ($split, $index) {
+        return array_sum(array_map(function ($split, $weight) {
+            return $split * $weight;
+        }, $splitId, array_keys($splitId)));
+    }
+
+    /**
+     * @param string $id
+     * @return int
+     */
+    private function calculateSumForForeign($id)
+    {
+        $splitId = str_split($id);
+
+        return array_sum(array_map(function ($split, $index) {
             return ($split * self::$weights[$index]) % 10;
         }, $splitId, array_keys($splitId)));
+    }
 
-        $sub = $checksum % 10;
+    /**
+     * @param int $sum
+     * @param int $checksum
+     * @return bool
+     */
+    private function checksum($sum, $checksum)
+    {
+        $sub = $sum % 10;
 
         if (0 === $sub) {
-            return $sub === $checkNumber;
+            return $sub === $checksum;
         }
 
-        return 10 - $sub === $checkNumber;
+        return 10 - $sub === $checksum;
+    }
+
+    /**
+     * @param string $id
+     * @return int
+     */
+    private function getChecksum($id)
+    {
+        return (int)$id[strlen($id) - 1];
     }
 
     /**
      * @param string $id
      * @return bool
      */
-    private function checksumForLocalIdentity($id)
+    private function isLocal($id)
     {
-        $id = self::$charMapping[$id[0]] . substr($id, 1);
-
-        $checksum = $this->generateChecksum($id);
-
-        return '0' === $checksum[strlen($checksum) - 1];
+        return in_array($id[1], ['1', '2'], true);
     }
 
-    private function generateChecksum($id)
+    /**
+     * @param string $id
+     * @return string
+     */
+    private function transferIdentityToNumber($id)
     {
-        return (string)array_sum(array_map(function ($split, $weight) {
-            return $split * $weight;
-        }, str_split($id), self::$weights));
+        return $this->isLocal($id)
+            ? self::$charMapping[$id[0]] . mb_substr($id, 1, 8)
+            : self::$charMapping[$id[0]] . self::$charMapping[$id[1]][1] . mb_substr($id, 2, 7);
     }
 }
