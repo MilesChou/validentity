@@ -85,13 +85,7 @@ class Taiwan implements ValidentityInterface
 
         $sum = $this->calculateSum($fakeIdNumber);
 
-        $sub = $sum % 10;
-
-        if (0 === $sub) {
-            return $fakeId . '0';
-        }
-
-        return $fakeId . (string)(10 - $sub);
+        return $fakeId . $this->generateChecksum($sum);
     }
 
     public function normalize($id)
@@ -163,22 +157,31 @@ class Taiwan implements ValidentityInterface
      */
     private function checksum($sum, $checksum)
     {
+        return $this->generateChecksum($sum) === $checksum;
+    }
+
+    /**
+     * @param int $sum
+     * @return string
+     */
+    private function generateChecksum($sum)
+    {
         $sub = $sum % 10;
 
         if (0 === $sub) {
-            return $sub === $checksum;
+            return '0';
         }
 
-        return 10 - $sub === $checksum;
+        return (string)(10 - $sub);
     }
 
     /**
      * @param string $id
-     * @return int
+     * @return string
      */
     private function getChecksum($id)
     {
-        return (int)$id[strlen($id) - 1];
+        return $id[strlen($id) - 1];
     }
 
     /**
