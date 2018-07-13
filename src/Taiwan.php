@@ -114,43 +114,6 @@ class Taiwan implements ValidentityInterface
     }
 
     /**
-     * @param string $id
-     * @return int
-     */
-    private function calculateSum($id)
-    {
-        return $this->isLocal($id)
-            ? $this->calculateSumForLocal($id)
-            : $this->calculateSumForForeign($id);
-    }
-
-    /**
-     * @param string $id
-     * @return int
-     */
-    private function calculateSumForLocal($id)
-    {
-        $splitId = str_split($id);
-
-        return array_sum(array_map(function ($split, $weight) {
-            return $split * $weight;
-        }, $splitId, array_keys($splitId)));
-    }
-
-    /**
-     * @param string $id
-     * @return int
-     */
-    private function calculateSumForForeign($id)
-    {
-        $splitId = str_split($id);
-
-        return array_sum(array_map(function ($split, $index) {
-            return ($split * self::$weights[$index]) % 10;
-        }, $splitId, array_keys($splitId)));
-    }
-
-    /**
      * @param int $sum
      * @param int $checksum
      * @return bool
@@ -177,11 +140,46 @@ class Taiwan implements ValidentityInterface
 
     /**
      * @param string $id
+     * @return int
+     */
+    private function calculateSum($id)
+    {
+        $algorithm = $this->isLocal($id)
+            ? $this->createLocalAlgorithm()
+            : $this->createForeignAlgorithm();
+
+        $splitId = str_split($id);
+
+        return array_sum(array_map($algorithm, $splitId, array_keys($splitId)));
+    }
+
+    /**
+     * @return \Closure
+     */
+    private function createForeignAlgorithm()
+    {
+        return function ($split, $index) {
+            return ($split * self::$weights[$index]) % 10;
+        };
+    }
+
+    /**
+     * @return \Closure
+     */
+    private function createLocalAlgorithm()
+    {
+        return function ($split, $index) {
+            return $split * self::$weights[$index];
+        };
+    }
+
+    /**
+     * @param string $id
      * @return string
      */
     private function getChecksum($id)
     {
-        return $id[strlen($id) - 1];
+        return $id[mb_strlen($id) - 1];
     }
 
     /**
