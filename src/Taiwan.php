@@ -1,6 +1,6 @@
 <?php
 
-namespace MilesChou\IdentityCard;
+namespace Validentity;
 
 class Taiwan
 {

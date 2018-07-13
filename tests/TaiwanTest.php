@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use MilesChou\IdentityCard\Taiwan;
+use Validentity\Taiwan;
 
 class TaiwanTest extends \PHPUnit_Framework_TestCase
 {

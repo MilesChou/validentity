@@ -1,10 +1,11 @@
 {
-    "name": "mileschou/identity",
+    "name": "validentity/validentity",
     "license": "MIT",
     "description": "Identity validator",
     "keywords": [
         "library",
-        "identity"
+        "identity",
+        "validation"
     ],
     "authors": [
         {
@@ -21,7 +22,7 @@
     },
     "autoload": {
         "psr-4": {
-            "MilesChou\\IdentityCard\\": "src"
+            "Validentity\\": "src"
         }
     },
     "autoload-dev": {
