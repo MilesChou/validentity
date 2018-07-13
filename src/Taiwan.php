@@ -2,7 +2,7 @@
 
 namespace Validentity;
 
-class Taiwan
+class Taiwan implements ValidentityInterface
 {
     /**
      * @var array
@@ -53,10 +53,6 @@ class Taiwan
         1,
     ];
 
-    /**
-     * @param string $id
-     * @return bool
-     */
     public function check($id)
     {
         $id = $this->normalize($id);
@@ -74,10 +70,6 @@ class Taiwan
         return false;
     }
 
-    /**
-     * @param string $id
-     * @return string
-     */
     public function normalize($id)
     {
         if (!is_string($id)) {
