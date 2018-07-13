@@ -21,6 +21,31 @@ class TaiwanTest extends \PHPUnit_Framework_TestCase
         $this->target = null;
     }
 
+    public function invalidArguments()
+    {
+        return [
+            ['NULL', null],
+            ['bool', true],
+            ['bool', false],
+            ['int', 0],
+            ['int', 1],
+            ['double', 1.0],
+            ['array', []],
+            ['object', new \stdClass()],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider invalidArguments
+     */
+    public function shouldThrowExceptionWhenGotInvalidArguments($exceptedType, $invalidArguments)
+    {
+        $this->setExpectedException('InvalidArgumentException', $exceptedType);
+
+        $this->target->check($invalidArguments);
+    }
+
     public function invalidId()
     {
         return [
@@ -48,6 +73,7 @@ class TaiwanTest extends \PHPUnit_Framework_TestCase
             ['AC01234567'],
             ['FA12345689'],
             ['HD12345678'],
+            ['HD12345570'],
         ];
     }
 
