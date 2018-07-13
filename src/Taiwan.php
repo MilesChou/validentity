@@ -7,7 +7,7 @@ class Taiwan
     /**
      * @var array
      */
-    private static $locationMapping = [
+    private static $charMapping = [
         'A' => '10',
         'B' => '11',
         'C' => '12',
@@ -61,19 +61,17 @@ class Taiwan
     {
         $id = $this->normalize($id);
 
-        // Identity pattern
-        if (!preg_match('/(^[A-Z]\d{9})$/', $id)) {
-            return false;
+        // Local identity pattern
+        if (preg_match('/(^[A-Z][1-2]\d{8})$/', $id)) {
+            return $this->checksumForLocalIdentity($id);
         }
 
-        /** @var string $idWithLocationNumber */
-        $idWithLocationNumber = self::$locationMapping[$id[0]] . substr($id, 1);
+        // Foreign identity pattern
+        if (preg_match('/(^[A-Z][A-D]\d{8})$/', $id)) {
+            return $this->checksumForForeignIdentity($id);
+        }
 
-        $checksum = (string)array_sum(array_map(function ($split, $weight) {
-            return $split * $weight;
-        }, str_split($idWithLocationNumber), self::$weights));
-
-        return '0' === $checksum[strlen($checksum) - 1];
+        return false;
     }
 
     /**
@@ -88,5 +86,50 @@ class Taiwan
         }
 
         return strtoupper($id);
+    }
+
+    /**
+     * @param string $id
+     * @return bool
+     */
+    private function checksumForForeignIdentity($id)
+    {
+        $checkNumber = (int)$id[strlen($id) - 1];
+
+        $id = self::$charMapping[$id[0]] . self::$charMapping[$id[1]][1] . substr($id, 2, -1);
+
+        $splitId = str_split($id);
+
+        $checksum = array_sum(array_map(function ($split, $index) {
+            return ($split * self::$weights[$index]) % 10;
+        }, $splitId, array_keys($splitId)));
+
+        $sub = $checksum % 10;
+
+        if (0 === $sub) {
+            return $sub === $checkNumber;
+        }
+
+        return 10 - $sub === $checkNumber;
+    }
+
+    /**
+     * @param string $id
+     * @return bool
+     */
+    private function checksumForLocalIdentity($id)
+    {
+        $id = self::$charMapping[$id[0]] . substr($id, 1);
+
+        $checksum = $this->generateChecksum($id);
+
+        return '0' === $checksum[strlen($checksum) - 1];
+    }
+
+    private function generateChecksum($id)
+    {
+        return (string)array_sum(array_map(function ($split, $weight) {
+            return $split * $weight;
+        }, str_split($id), self::$weights));
     }
 }

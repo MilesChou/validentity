@@ -45,6 +45,9 @@ class TaiwanTest extends \PHPUnit_Framework_TestCase
     {
         return [
             ['A123456789'],
+            ['AC01234567'],
+            ['FA12345689'],
+            ['HD12345678'],
         ];
     }
 
