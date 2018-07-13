@@ -21,11 +21,39 @@ class TaiwanTest extends \PHPUnit_Framework_TestCase
         $this->target = null;
     }
 
+    public function invalidId()
+    {
+        return [
+            ['A0123456789'],
+            ['A9876543210'],
+            ['@123456789'],
+            ['0123456789'],
+            ['中123456789'],
+        ];
+    }
+
     /**
      * @test
+     * @dataProvider invalidId
      */
-    public function normalCase()
+    public function shouldReturnFalseWhenGotInvalidId($invalidId)
     {
-        $this->assertTrue(true);
+        $this->assertFalse($this->target->check($invalidId));
+    }
+
+    public function validId()
+    {
+        return [
+            ['A123456789'],
+        ];
+    }
+
+    /**
+     * @test
+     * @dataProvider validId
+     */
+    public function shouldReturnTrueWhenGotValidId($id)
+    {
+        $this->assertTrue($this->target->check($id));
     }
 }
