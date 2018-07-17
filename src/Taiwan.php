@@ -47,15 +47,6 @@ class Taiwan implements ValidentityInterface
         'Z' => '33',
     ];
 
-    private static $genderChars = [
-        '1',
-        '2',
-        'A',
-        'B',
-        'C',
-        'D',
-    ];
-
     /**
      * @var array
      */
@@ -75,8 +66,6 @@ class Taiwan implements ValidentityInterface
 
     public function check($id)
     {
-        $id = $this->normalize($id);
-
         if (!$this->checkPattern($id)) {
             return false;
         }
@@ -84,10 +73,17 @@ class Taiwan implements ValidentityInterface
         return $this->checkIdentity($id);
     }
 
+    public function checkWithNormalize($id)
+    {
+        return $this->check($this->normalize($id));
+    }
+
     public function generate()
     {
         $locationChar = array_rand(static::$charMapping);
-        $genderChar = static::$genderChars[array_rand(static::$genderChars)];
+
+        $genderChars = $this->buildGenderChars();
+        $genderChar = $genderChars[array_rand($genderChars)];
 
         $fakeId = $locationChar . $genderChar . mt_rand(1000000, 9999999);
 
@@ -100,6 +96,10 @@ class Taiwan implements ValidentityInterface
 
     public function normalize($id)
     {
+        if (is_object($id) && method_exists($id, '__toString')) {
+            $id = $id->__toString();
+        }
+
         if (!is_string($id)) {
             $type = gettype($id);
             throw new \InvalidArgumentException("Excepted string type, given is $type");
@@ -123,6 +123,37 @@ class Taiwan implements ValidentityInterface
         }
 
         $this->validateFor = $type;
+    }
+
+    /**
+     * @return array
+     */
+    public function buildGenderChars()
+    {
+        switch ($this->validateFor) {
+            case self::VALIDATE_LOCAL:
+                return [
+                    '1',
+                    '2',
+                ];
+            case self::VALIDATE_FOREIGN:
+                return [
+                    'A',
+                    'B',
+                    'C',
+                    'D',
+                ];
+            case self::VALIDATE_ALL:
+            default:
+                return [
+                    '1',
+                    '2',
+                    'A',
+                    'B',
+                    'C',
+                    'D',
+                ];
+        }
     }
 
     /**

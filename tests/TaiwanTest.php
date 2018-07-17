@@ -39,16 +39,18 @@ class TaiwanTest extends \PHPUnit_Framework_TestCase
      * @test
      * @dataProvider invalidArguments
      */
-    public function shouldThrowExceptionWhenGotInvalidArguments($exceptedType, $invalidArguments)
+    public function shouldThrowExceptionWhenCallNormalizeWithInvalidArguments($exceptedType, $invalidArguments)
     {
         $this->setExpectedException('InvalidArgumentException', $exceptedType);
 
-        $this->target->check($invalidArguments);
+        $this->target->normalize($invalidArguments);
     }
 
     public function invalidId()
     {
         return [
+            ['a123456789'],
+            ['AA00000000'],
             ['A0123456789'],
             ['A9876543210'],
             ['@123456789'],
@@ -70,6 +72,8 @@ class TaiwanTest extends \PHPUnit_Framework_TestCase
     {
         return [
             ['A123456789'],
+            ['N152093966'],
+            ['Z163009774'],
             ['AC01234567'],
             ['FA12345689'],
             ['HD12345678'],
