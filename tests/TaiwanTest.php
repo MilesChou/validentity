@@ -95,4 +95,37 @@ class TaiwanTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($this->target->check($fakeId), "Assert identity '$fakeId' is valid");
     }
+
+    /**
+     * @test
+     */
+    public function shouldAllReturnTrueWhenSetValidateAll()
+    {
+        $this->target->setValidateType(Taiwan::VALIDATE_ALL);
+
+        $this->assertTrue($this->target->check('A123456789'));
+        $this->assertTrue($this->target->check('AC01234567'));
+    }
+
+    /**
+     * @test
+     */
+    public function shouldReturnFalseWhenSetValidateLocalWithForeignIdentity()
+    {
+        $this->target->setValidateType(Taiwan::VALIDATE_LOCAL);
+
+        $this->assertTrue($this->target->check('A123456789'));
+        $this->assertFalse($this->target->check('AC01234567'));
+    }
+
+    /**
+     * @test
+     */
+    public function shouldReturnFalseWhenSetValidateForeignWithLocalIdentity()
+    {
+        $this->target->setValidateType(Taiwan::VALIDATE_FOREIGN);
+
+        $this->assertFalse($this->target->check('A123456789'));
+        $this->assertTrue($this->target->check('AC01234567'));
+    }
 }

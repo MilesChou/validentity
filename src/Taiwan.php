@@ -4,6 +4,17 @@ namespace Validentity;
 
 class Taiwan implements ValidentityInterface
 {
+    const VALIDATE_LOCAL = 0b0001;
+
+    const VALIDATE_FOREIGN = 0b0010;
+
+    const VALIDATE_ALL = 0b0011;
+
+    /**
+     * @var int
+     */
+    private $validateFor = self::VALIDATE_ALL;
+
     /**
      * @var array
      */
@@ -66,8 +77,7 @@ class Taiwan implements ValidentityInterface
     {
         $id = $this->normalize($id);
 
-        // Check identity pattern
-        if (!preg_match('/(^[A-Z][A-D1-2]\d{8})$/', $id)) {
+        if (!$this->checkPattern($id)) {
             return false;
         }
 
@@ -96,6 +106,44 @@ class Taiwan implements ValidentityInterface
         }
 
         return strtoupper(trim($id));
+    }
+
+    /**
+     * @param int $type Should be const VALIDATE_LOCAL, VALIDATE_FOREIGN, VALIDATE_ALL
+     */
+    public function setValidateType($type)
+    {
+        if (!in_array($type, [
+            self::VALIDATE_LOCAL,
+            self::VALIDATE_FOREIGN,
+            self::VALIDATE_ALL,
+        ], true)) {
+            $message = 'Excepted const VALIDATE_LOCAL, VALIDATE_FOREIGN, VALIDATE_ALL';
+            throw new \InvalidArgumentException($message);
+        }
+
+        $this->validateFor = $type;
+    }
+
+    /**
+     * @param string $id
+     * @return bool
+     */
+    private function checkPattern($id)
+    {
+        $defaultResult = false;
+
+        $includeLocal = self::VALIDATE_LOCAL === (self::VALIDATE_LOCAL & $this->validateFor);
+        if ($includeLocal) {
+            $defaultResult = $defaultResult || preg_match('/(^[A-Z][1-2]\d{8})$/', $id);
+        }
+
+        $includeForeign = self::VALIDATE_FOREIGN === (self::VALIDATE_FOREIGN & $this->validateFor);
+        if ($includeForeign) {
+            $defaultResult = $defaultResult || preg_match('/(^[A-Z][A-D]\d{8})$/', $id);
+        }
+
+        return $defaultResult;
     }
 
     /**
