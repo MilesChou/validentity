@@ -95,7 +95,7 @@ class Taiwan implements ValidentityInterface
             throw new \InvalidArgumentException("Excepted string type, given is $type");
         }
 
-        return strtoupper($id);
+        return strtoupper(trim($id));
     }
 
     /**
