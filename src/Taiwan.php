@@ -128,13 +128,69 @@ class Taiwan implements GeneratorInterface, ValidatorInterface
      */
     private function checkIdentity($id)
     {
-        $checksum = $this->getChecksum($id);
+        // Checksum is the last char
+        $checksum = $id[mb_strlen($id) - 1];
 
-        $idNumber = $this->transferIdentityToNumericString($id);
+        // Transfer to a numeric string
+        $numericString = $this->transferCharToNumericString($id);
 
-        $sum = $this->calculateSum($idNumber);
+        // Use the algorithm to calculate the sum
+        $sum = $this->calculateSum($numericString);
 
+        // Validate the sum and checksum
         return $this->checksum($sum, $checksum);
+    }
+
+    /**
+     * @param string $id
+     * @return string
+     */
+    private function transferCharToNumericString($id)
+    {
+        return $this->isLocalIdentity($id)
+            ? static::$charMapping[$id[0]] . mb_substr($id, 1, 8)
+            : static::$charMapping[$id[0]] . static::$charMapping[$id[1]][1] . mb_substr($id, 2, 7);
+    }
+
+    /**
+     * @param string $id
+     * @return bool
+     */
+    private function isLocalIdentity($id)
+    {
+        return in_array($id[1], ['1', '2'], true);
+    }
+
+    /**
+     * @param string $id
+     * @return int
+     */
+    private function calculateSum($id)
+    {
+        $splitId = str_split($id);
+
+        return array_sum(
+            array_map($this->createAlgorithm($id), $splitId, array_keys($splitId))
+        );
+    }
+
+    /**
+     * @param string $id
+     * @return \Closure
+     */
+    private function createAlgorithm($id)
+    {
+        if ($this->isLocalIdentity($id)) {
+            // The local identity algorithm for calc the sum
+            return function ($split, $index) {
+                return $split * static::$weights[$index];
+            };
+        }
+
+        // The foreign identity algorithm for calc the sum
+        return function ($split, $index) {
+            return ($split * static::$weights[$index]) % 10;
+        };
     }
 
     /**
@@ -158,72 +214,6 @@ class Taiwan implements GeneratorInterface, ValidatorInterface
         return 0 === $sub
             ? '0'
             : (string)(10 - $sub);
-    }
-
-    /**
-     * @param string $id
-     * @return int
-     */
-    private function calculateSum($id)
-    {
-        $algorithm = $this->isLocal($id)
-            ? $this->createLocalAlgorithm()
-            : $this->createForeignAlgorithm();
-
-        $splitId = str_split($id);
-
-        return array_sum(
-            array_map($algorithm, $splitId, array_keys($splitId))
-        );
-    }
-
-    /**
-     * @return \Closure
-     */
-    private function createForeignAlgorithm()
-    {
-        return function ($split, $index) {
-            return ($split * static::$weights[$index]) % 10;
-        };
-    }
-
-    /**
-     * @return \Closure
-     */
-    private function createLocalAlgorithm()
-    {
-        return function ($split, $index) {
-            return $split * static::$weights[$index];
-        };
-    }
-
-    /**
-     * @param string $id
-     * @return string
-     */
-    private function getChecksum($id)
-    {
-        return $id[mb_strlen($id) - 1];
-    }
-
-    /**
-     * @param string $id
-     * @return bool
-     */
-    private function isLocal($id)
-    {
-        return in_array($id[1], ['1', '2'], true);
-    }
-
-    /**
-     * @param string $id
-     * @return string
-     */
-    private function transferIdentityToNumericString($id)
-    {
-        return $this->isLocal($id)
-            ? static::$charMapping[$id[0]] . mb_substr($id, 1, 8)
-            : static::$charMapping[$id[0]] . static::$charMapping[$id[1]][1] . mb_substr($id, 2, 7);
     }
 
     /**

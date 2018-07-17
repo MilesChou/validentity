@@ -13,7 +13,7 @@ trait TaiwanGenerator
 
         $fakeId = $locationChar . $genderChar . mt_rand(1000000, 9999999);
 
-        $fakeIdNumber = $this->transferIdentityToNumericString($fakeId);
+        $fakeIdNumber = $this->transferCharToNumericString($fakeId);
 
         $sum = $this->calculateSum($fakeIdNumber);
 
