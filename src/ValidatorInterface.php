@@ -11,12 +11,6 @@ interface ValidatorInterface
     public function check($id);
 
     /**
-     * @param string $id
-     * @return bool
-     */
-    public function checkWithNormalize($id);
-
-    /**
      * @param mixed $id
      * @return string
      */

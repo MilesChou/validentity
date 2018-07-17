@@ -4,6 +4,8 @@ namespace Validentity;
 
 class Taiwan implements GeneratorInterface, ValidatorInterface
 {
+    use GeneratorConcerns\TaiwanGenerator;
+
     const VALIDATE_LOCAL = 0b0001;
 
     const VALIDATE_FOREIGN = 0b0010;
@@ -13,7 +15,7 @@ class Taiwan implements GeneratorInterface, ValidatorInterface
     /**
      * @var int
      */
-    private $validateFor = self::VALIDATE_ALL;
+    private $validateFor;
 
     /**
      * @var array
@@ -64,6 +66,14 @@ class Taiwan implements GeneratorInterface, ValidatorInterface
         1,
     ];
 
+    /**
+     * @param int $type
+     */
+    public function __construct($type = self::VALIDATE_ALL)
+    {
+        $this->validateFor = $type;
+    }
+
     public function check($id)
     {
         if (!$this->checkPattern($id)) {
@@ -71,27 +81,6 @@ class Taiwan implements GeneratorInterface, ValidatorInterface
         }
 
         return $this->checkIdentity($id);
-    }
-
-    public function checkWithNormalize($id)
-    {
-        return $this->check($this->normalize($id));
-    }
-
-    public function generate()
-    {
-        $locationChar = array_rand(static::$charMapping);
-
-        $genderChars = $this->buildGenderChars();
-        $genderChar = $genderChars[array_rand($genderChars)];
-
-        $fakeId = $locationChar . $genderChar . mt_rand(1000000, 9999999);
-
-        $fakeIdNumber = $this->transferIdentityToNumericString($fakeId);
-
-        $sum = $this->calculateSum($fakeIdNumber);
-
-        return $fakeId . $this->generateChecksum($sum);
     }
 
     public function normalize($id)
@@ -106,54 +95,6 @@ class Taiwan implements GeneratorInterface, ValidatorInterface
         }
 
         return strtoupper(trim($id));
-    }
-
-    /**
-     * @param int $type Should be const VALIDATE_LOCAL, VALIDATE_FOREIGN, VALIDATE_ALL
-     */
-    public function setValidateType($type)
-    {
-        if (!in_array($type, [
-            static::VALIDATE_LOCAL,
-            static::VALIDATE_FOREIGN,
-            static::VALIDATE_ALL,
-        ], true)) {
-            $message = 'Excepted const VALIDATE_LOCAL, VALIDATE_FOREIGN, VALIDATE_ALL';
-            throw new \InvalidArgumentException($message);
-        }
-
-        $this->validateFor = $type;
-    }
-
-    /**
-     * @return array
-     */
-    public function buildGenderChars()
-    {
-        switch ($this->validateFor) {
-            case self::VALIDATE_LOCAL:
-                return [
-                    '1',
-                    '2',
-                ];
-            case self::VALIDATE_FOREIGN:
-                return [
-                    'A',
-                    'B',
-                    'C',
-                    'D',
-                ];
-            case self::VALIDATE_ALL:
-            default:
-                return [
-                    '1',
-                    '2',
-                    'A',
-                    'B',
-                    'C',
-                    'D',
-                ];
-        }
     }
 
     /**
@@ -283,5 +224,25 @@ class Taiwan implements GeneratorInterface, ValidatorInterface
         return $this->isLocal($id)
             ? static::$charMapping[$id[0]] . mb_substr($id, 1, 8)
             : static::$charMapping[$id[0]] . static::$charMapping[$id[1]][1] . mb_substr($id, 2, 7);
+    }
+
+    /**
+     * @param int $type Should be const VALIDATE_LOCAL, VALIDATE_FOREIGN, VALIDATE_ALL
+     * @return static
+     */
+    public function setValidateType($type)
+    {
+        if (!in_array($type, [
+            static::VALIDATE_LOCAL,
+            static::VALIDATE_FOREIGN,
+            static::VALIDATE_ALL,
+        ], true)) {
+            $message = 'Excepted const VALIDATE_LOCAL, VALIDATE_FOREIGN, VALIDATE_ALL';
+            throw new \InvalidArgumentException($message);
+        }
+
+        $this->validateFor = $type;
+
+        return $this;
     }
 }
