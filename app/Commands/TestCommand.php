@@ -50,5 +50,33 @@ class TestCommand extends Command
 
         $avgTime = $totalTime / $count;
         $output->writeln(sprintf('Average time is %f second', $avgTime));
+
+        $output->writeln(sprintf('Using memory is %s', $this->formatBytes(memory_get_usage())));
+        $output->writeln(sprintf('Using memory peak is %s', $this->formatBytes(memory_get_peak_usage())));
+    }
+
+    /**
+     * See https://gist.github.com/willsoto/5914018
+     *
+     * @param int $bytes
+     * @return string
+     */
+    private function formatBytes($bytes)
+    {
+        $sizes = [
+            'Bytes',
+            'KB',
+            'MB',
+            'GB',
+            'TB'
+        ];
+
+        if ($bytes === 0) {
+            return 'n/a';
+        }
+
+        $i = floor(log($bytes) / log(1024));
+
+        return round($bytes / pow(1024, $i), 2) . ' ' . $sizes[$i];
     }
 }
