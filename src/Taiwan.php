@@ -4,6 +4,7 @@ namespace Validentity;
 
 class Taiwan implements GeneratorInterface, ValidatorInterface
 {
+    use Concerns\StringNormalizer;
     use GeneratorConcerns\TaiwanGenerator;
 
     const TYPE_LOCAL = 0b0001;
@@ -81,20 +82,6 @@ class Taiwan implements GeneratorInterface, ValidatorInterface
         }
 
         return $this->checkIdentity($id);
-    }
-
-    public function normalize($id)
-    {
-        if (is_object($id) && method_exists($id, '__toString')) {
-            $id = $id->__toString();
-        }
-
-        if (!is_string($id)) {
-            $type = gettype($id);
-            throw new \InvalidArgumentException("Excepted string type, given is $type");
-        }
-
-        return strtoupper(trim($id));
     }
 
     /**
