@@ -13,9 +13,9 @@ trait TaiwanGenerator
 
         $fakeId = $locationChar . $genderChar . mt_rand(1000000, 9999999);
 
-        $fakeIdNumber = $this->transferCharToNumericString($fakeId);
+        $fakeNumericString = $this->transferCharToNumericString($fakeId);
 
-        $sum = $this->calculateSum($fakeIdNumber);
+        $sum = $this->calculateSum($fakeNumericString);
 
         return $fakeId . $this->generateChecksum($sum);
     }
@@ -26,19 +26,19 @@ trait TaiwanGenerator
     public function buildGenderChars()
     {
         switch ($this->validateFor) {
-            case self::VALIDATE_LOCAL:
+            case static::VALIDATE_LOCAL:
                 return [
                     '1',
                     '2',
                 ];
-            case self::VALIDATE_FOREIGN:
+            case static::VALIDATE_FOREIGN:
                 return [
                     'A',
                     'B',
                     'C',
                     'D',
                 ];
-            case self::VALIDATE_ALL:
+            case static::VALIDATE_ALL:
             default:
                 return [
                     '1',

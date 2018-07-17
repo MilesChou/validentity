@@ -112,11 +112,11 @@ class Taiwan implements GeneratorInterface, ValidatorInterface
     private function buildPattern()
     {
         switch ($this->validateFor) {
-            case self::VALIDATE_LOCAL:
+            case static::VALIDATE_LOCAL:
                 return '/(^[A-Z][1-2]\d{8})$/';
-            case self::VALIDATE_FOREIGN:
+            case static::VALIDATE_FOREIGN:
                 return '/(^[A-Z][A-D]\d{8})$/';
-            case self::VALIDATE_ALL:
+            case static::VALIDATE_ALL:
             default:
                 return '/(^[A-Z][A-D1-2]\d{8})$/';
         }
