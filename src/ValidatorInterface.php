@@ -2,7 +2,7 @@
 
 namespace Validentity;
 
-interface ValidentityInterface
+interface ValidatorInterface
 {
     /**
      * @param string $id
@@ -15,11 +15,6 @@ interface ValidentityInterface
      * @return bool
      */
     public function checkWithNormalize($id);
-
-    /**
-     * @return string
-     */
-    public function generate();
 
     /**
      * @param mixed $id

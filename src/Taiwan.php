@@ -2,7 +2,7 @@
 
 namespace Validentity;
 
-class Taiwan implements ValidentityInterface
+class Taiwan implements GeneratorInterface, ValidatorInterface
 {
     const VALIDATE_LOCAL = 0b0001;
 
