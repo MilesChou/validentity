@@ -52,4 +52,19 @@ trait TaiwanValidatorCommon
         1,
         1,
     ];
+
+    /**
+     * @param int $sum
+     * @return int
+     */
+    private function generateChecksum($sum)
+    {
+        $sub = $sum % 10;
+
+        if (0 === $sub) {
+            return 0;
+        }
+
+        return 10 - $sub;
+    }
 }
