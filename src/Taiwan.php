@@ -87,7 +87,7 @@ class Taiwan implements ValidentityInterface
 
         $fakeId = $locationChar . $genderChar . mt_rand(1000000, 9999999);
 
-        $fakeIdNumber = $this->transferIdentityToNumber($fakeId);
+        $fakeIdNumber = $this->transferIdentityToNumericString($fakeId);
 
         $sum = $this->calculateSum($fakeIdNumber);
 
@@ -189,7 +189,7 @@ class Taiwan implements ValidentityInterface
     {
         $checksum = $this->getChecksum($id);
 
-        $idNumber = $this->transferIdentityToNumber($id);
+        $idNumber = $this->transferIdentityToNumericString($id);
 
         $sum = $this->calculateSum($idNumber);
 
@@ -214,11 +214,9 @@ class Taiwan implements ValidentityInterface
     {
         $sub = $sum % 10;
 
-        if (0 === $sub) {
-            return '0';
-        }
-
-        return (string)(10 - $sub);
+        return 0 === $sub
+            ? '0'
+            : (string)(10 - $sub);
     }
 
     /**
@@ -233,7 +231,9 @@ class Taiwan implements ValidentityInterface
 
         $splitId = str_split($id);
 
-        return array_sum(array_map($algorithm, $splitId, array_keys($splitId)));
+        return array_sum(
+            array_map($algorithm, $splitId, array_keys($splitId))
+        );
     }
 
     /**
@@ -278,7 +278,7 @@ class Taiwan implements ValidentityInterface
      * @param string $id
      * @return string
      */
-    private function transferIdentityToNumber($id)
+    private function transferIdentityToNumericString($id)
     {
         return $this->isLocal($id)
             ? static::$charMapping[$id[0]] . mb_substr($id, 1, 8)
