@@ -4,8 +4,8 @@ namespace Validentity;
 
 class TaiwanLocal implements ValidatorInterface
 {
+    use Concerns\Validators\TaiwanValidatorCommon;
     use Concerns\StringNormalizer;
-    use ValidatorConcerns\TaiwanValidatorCommon;
 
     public function check($id)
     {

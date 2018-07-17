@@ -1,6 +1,6 @@
 <?php
 
-namespace Validentity\ValidatorConcerns;
+namespace Validentity\Concerns\Validators;
 
 trait TaiwanValidatorCommon
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Validentity\GeneratorConcerns;
+namespace Validentity\Concerns\Generators;
 
 trait TaiwanGenerator
 {
