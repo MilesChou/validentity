@@ -67,4 +67,15 @@ trait TaiwanValidatorCommon
 
         return 10 - $sub;
     }
+
+    /**
+     * Checksum is the last numeric char
+     *
+     * @param string $id
+     * @return int
+     */
+    private function getChecksum($id)
+    {
+        return (int)$id[mb_strlen($id) - 1];
+    }
 }
