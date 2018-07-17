@@ -105,7 +105,7 @@ class TaiwanTest extends \PHPUnit_Framework_TestCase
      */
     public function shouldAllReturnTrueWhenSetValidateAll()
     {
-        $this->target->setValidateType(Taiwan::VALIDATE_ALL);
+        $this->target->setValidateType(Taiwan::TYPE_ALL);
 
         $this->assertTrue($this->target->check('A123456789'));
         $this->assertTrue($this->target->check('AC01234567'));
@@ -116,7 +116,7 @@ class TaiwanTest extends \PHPUnit_Framework_TestCase
      */
     public function shouldReturnFalseWhenSetValidateLocalWithForeignIdentity()
     {
-        $this->target->setValidateType(Taiwan::VALIDATE_LOCAL);
+        $this->target->setValidateType(Taiwan::TYPE_LOCAL);
 
         $this->assertTrue($this->target->check('A123456789'));
         $this->assertFalse($this->target->check('AC01234567'));
@@ -127,7 +127,7 @@ class TaiwanTest extends \PHPUnit_Framework_TestCase
      */
     public function shouldReturnFalseWhenSetValidateForeignWithLocalIdentity()
     {
-        $this->target->setValidateType(Taiwan::VALIDATE_FOREIGN);
+        $this->target->setValidateType(Taiwan::TYPE_FOREIGN);
 
         $this->assertFalse($this->target->check('A123456789'));
         $this->assertTrue($this->target->check('AC01234567'));

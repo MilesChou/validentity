@@ -25,20 +25,20 @@ trait TaiwanGenerator
      */
     public function buildGenderChars()
     {
-        switch ($this->validateFor) {
-            case static::VALIDATE_LOCAL:
+        switch ($this->validateType) {
+            case static::TYPE_LOCAL:
                 return [
                     '1',
                     '2',
                 ];
-            case static::VALIDATE_FOREIGN:
+            case static::TYPE_FOREIGN:
                 return [
                     'A',
                     'B',
                     'C',
                     'D',
                 ];
-            case static::VALIDATE_ALL:
+            case static::TYPE_ALL:
             default:
                 return [
                     '1',

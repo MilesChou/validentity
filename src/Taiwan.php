@@ -6,16 +6,16 @@ class Taiwan implements GeneratorInterface, ValidatorInterface
 {
     use GeneratorConcerns\TaiwanGenerator;
 
-    const VALIDATE_LOCAL = 0b0001;
+    const TYPE_LOCAL = 0b0001;
 
-    const VALIDATE_FOREIGN = 0b0010;
+    const TYPE_FOREIGN = 0b0010;
 
-    const VALIDATE_ALL = 0b0011;
+    const TYPE_ALL = 0b0011;
 
     /**
      * @var int
      */
-    private $validateFor;
+    private $validateType;
 
     /**
      * @var array
@@ -69,9 +69,9 @@ class Taiwan implements GeneratorInterface, ValidatorInterface
     /**
      * @param int $type
      */
-    public function __construct($type = self::VALIDATE_ALL)
+    public function __construct($type = self::TYPE_ALL)
     {
-        $this->validateFor = $type;
+        $this->validateType = $type;
     }
 
     public function check($id)
@@ -111,12 +111,12 @@ class Taiwan implements GeneratorInterface, ValidatorInterface
      */
     private function buildPattern()
     {
-        switch ($this->validateFor) {
-            case static::VALIDATE_LOCAL:
+        switch ($this->validateType) {
+            case static::TYPE_LOCAL:
                 return '/(^[A-Z][1-2]\d{8})$/';
-            case static::VALIDATE_FOREIGN:
+            case static::TYPE_FOREIGN:
                 return '/(^[A-Z][A-D]\d{8})$/';
-            case static::VALIDATE_ALL:
+            case static::TYPE_ALL:
             default:
                 return '/(^[A-Z][A-D1-2]\d{8})$/';
         }
@@ -223,15 +223,15 @@ class Taiwan implements GeneratorInterface, ValidatorInterface
     public function setValidateType($type)
     {
         if (!in_array($type, [
-            static::VALIDATE_LOCAL,
-            static::VALIDATE_FOREIGN,
-            static::VALIDATE_ALL,
+            static::TYPE_LOCAL,
+            static::TYPE_FOREIGN,
+            static::TYPE_ALL,
         ], true)) {
             $message = 'Excepted const VALIDATE_LOCAL, VALIDATE_FOREIGN, VALIDATE_ALL';
             throw new \InvalidArgumentException($message);
         }
 
-        $this->validateFor = $type;
+        $this->validateType = $type;
 
         return $this;
     }
