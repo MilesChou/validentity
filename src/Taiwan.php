@@ -128,8 +128,8 @@ class Taiwan implements GeneratorInterface, ValidatorInterface
      */
     private function checkIdentity($id)
     {
-        // Checksum is the last char
-        $checksum = $id[mb_strlen($id) - 1];
+        // Checksum is the last numeric char
+        $checksum = (int)$id[mb_strlen($id) - 1];
 
         // Transfer to a numeric string
         $numericString = $this->transferCharToNumericString($id);
@@ -212,8 +212,8 @@ class Taiwan implements GeneratorInterface, ValidatorInterface
         $sub = $sum % 10;
 
         return 0 === $sub
-            ? '0'
-            : (string)(10 - $sub);
+            ? 0
+            : (10 - $sub);
     }
 
     /**
