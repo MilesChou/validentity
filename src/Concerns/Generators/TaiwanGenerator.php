@@ -21,33 +21,48 @@ trait TaiwanGenerator
     }
 
     /**
+     * @param string $id
+     * @return string
+     */
+    private function transferCharToNumericString($id)
+    {
+        return $this->isLocalIdentity($id)
+            ? static::$charMapping[$id[0]] . mb_substr($id, 1, 8)
+            : static::$charMapping[$id[0]] . static::$charMapping[$id[1]][1] . mb_substr($id, 2, 7);
+    }
+
+    /**
+     * @param string $id
+     * @return string
+     */
+    private function calculateSum($id)
+    {
+        return $this->isLocalIdentity($id)
+            ? $this->localChecker->calculateSum($id)
+            : $this->foreignChecker->calculateSum($id);
+    }
+
+    /**
+     * @param string $id
+     * @return bool
+     */
+    private function isLocalIdentity($id)
+    {
+        return in_array($id[1], ['1', '2'], true);
+    }
+
+    /**
      * @return array
      */
     public function buildGenderChars()
     {
-        switch ($this->validateType) {
-            case static::TYPE_LOCAL:
-                return [
-                    '1',
-                    '2',
-                ];
-            case static::TYPE_FOREIGN:
-                return [
-                    'A',
-                    'B',
-                    'C',
-                    'D',
-                ];
-            case static::TYPE_ALL:
-            default:
-                return [
-                    '1',
-                    '2',
-                    'A',
-                    'B',
-                    'C',
-                    'D',
-                ];
-        }
+        return [
+            '1',
+            '2',
+            'A',
+            'B',
+            'C',
+            'D',
+        ];
     }
 }

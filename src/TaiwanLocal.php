@@ -33,7 +33,7 @@ class TaiwanLocal implements ValidatorInterface
      * @param string $id
      * @return int
      */
-    private function calculateSum($id)
+    public function calculateSum($id)
     {
         $splitId = str_split($id);
 
