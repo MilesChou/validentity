@@ -71,7 +71,7 @@ class Taiwan implements GeneratorInterface, ValidatorInterface
      */
     public function __construct($type = self::TYPE_ALL)
     {
-        $this->validateType = $type;
+        $this->setValidateType($type);
     }
 
     public function check($id)
