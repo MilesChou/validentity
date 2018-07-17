@@ -86,8 +86,8 @@ class Taiwan implements ValidentityInterface
 
     public function generate()
     {
-        $locationChar = array_rand(self::$charMapping);
-        $genderChar = self::$genderChars[array_rand(self::$genderChars)];
+        $locationChar = array_rand(static::$charMapping);
+        $genderChar = static::$genderChars[array_rand(static::$genderChars)];
 
         $fakeId = $locationChar . $genderChar . mt_rand(1000000, 9999999);
 
@@ -114,9 +114,9 @@ class Taiwan implements ValidentityInterface
     public function setValidateType($type)
     {
         if (!in_array($type, [
-            self::VALIDATE_LOCAL,
-            self::VALIDATE_FOREIGN,
-            self::VALIDATE_ALL,
+            static::VALIDATE_LOCAL,
+            static::VALIDATE_FOREIGN,
+            static::VALIDATE_ALL,
         ], true)) {
             $message = 'Excepted const VALIDATE_LOCAL, VALIDATE_FOREIGN, VALIDATE_ALL';
             throw new \InvalidArgumentException($message);
@@ -131,19 +131,23 @@ class Taiwan implements ValidentityInterface
      */
     private function checkPattern($id)
     {
-        $defaultResult = false;
+        return preg_match($this->buildPattern(), $id);
+    }
 
-        $includeLocal = self::VALIDATE_LOCAL === (self::VALIDATE_LOCAL & $this->validateFor);
-        if ($includeLocal) {
-            $defaultResult = $defaultResult || preg_match('/(^[A-Z][1-2]\d{8})$/', $id);
+    /**
+     * @return string
+     */
+    private function buildPattern()
+    {
+        switch ($this->validateFor) {
+            case self::VALIDATE_LOCAL:
+                return '/(^[A-Z][1-2]\d{8})$/';
+            case self::VALIDATE_FOREIGN:
+                return '/(^[A-Z][A-D]\d{8})$/';
+            case self::VALIDATE_ALL:
+            default:
+                return '/(^[A-Z][A-D1-2]\d{8})$/';
         }
-
-        $includeForeign = self::VALIDATE_FOREIGN === (self::VALIDATE_FOREIGN & $this->validateFor);
-        if ($includeForeign) {
-            $defaultResult = $defaultResult || preg_match('/(^[A-Z][A-D]\d{8})$/', $id);
-        }
-
-        return $defaultResult;
     }
 
     /**
@@ -207,7 +211,7 @@ class Taiwan implements ValidentityInterface
     private function createForeignAlgorithm()
     {
         return function ($split, $index) {
-            return ($split * self::$weights[$index]) % 10;
+            return ($split * static::$weights[$index]) % 10;
         };
     }
 
@@ -217,7 +221,7 @@ class Taiwan implements ValidentityInterface
     private function createLocalAlgorithm()
     {
         return function ($split, $index) {
-            return $split * self::$weights[$index];
+            return $split * static::$weights[$index];
         };
     }
 
@@ -246,7 +250,7 @@ class Taiwan implements ValidentityInterface
     private function transferIdentityToNumber($id)
     {
         return $this->isLocal($id)
-            ? self::$charMapping[$id[0]] . mb_substr($id, 1, 8)
-            : self::$charMapping[$id[0]] . self::$charMapping[$id[1]][1] . mb_substr($id, 2, 7);
+            ? static::$charMapping[$id[0]] . mb_substr($id, 1, 8)
+            : static::$charMapping[$id[0]] . static::$charMapping[$id[1]][1] . mb_substr($id, 2, 7);
     }
 }
