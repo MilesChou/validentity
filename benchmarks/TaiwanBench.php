@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Benchmarks;
+namespace Benchmarks;
 
 use PhpBench\Benchmark\Metadata\Annotations\Iterations;
 use PhpBench\Benchmark\Metadata\Annotations\Revs;
@@ -10,7 +10,7 @@ class TaiwanBench
 {
     /**
      * @Revs(10000)
-     * @Iterations(5)
+     * @Iterations(3)
      */
     public function benchTaiwan()
     {
